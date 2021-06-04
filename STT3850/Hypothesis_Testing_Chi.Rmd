@@ -1,0 +1,174 @@
+---
+title: "Hypothesis Testing: Comparing Two Groups"
+author: "Seth"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+Consider the Flight Delays dataset discussed in Chapter 1 of the Chihara & Hesterberg textbook, which contains data on selected flights departing from LaGuardia airport in 2009. Complete all problems below using that dataset. 
+
+```{r message = FALSE}
+delays <- read.csv("https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Chihara/FlightDelays.csv")
+str(delays)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(BSDA)
+```
+
+
+### Problem 1
+
+Conduct a traditional t-test and a permutation resampling test to determine whether the average delay times of the two airlines differ. 
+
+```{r message = FALSE}
+summaries <- delays %>% group_by(Carrier) %>% summarize(n = n(), xbar = mean(Delay), stdv = sd(Delay))
+print.data.frame(summaries)
+ggplot(delays, aes(x = Carrier, y = Delay)) + geom_boxplot()
+ggplot(delays, aes(sample = Delay, color = Carrier)) + stat_qq() + stat_qq_line()
+# Ho: Mean delay time of flight 1 = Mean delay time of flight 2 
+obsMeanDiff <- -diff(summaries$xbar)
+print(obsMeanDiff)
+delayTest<- t.test(delays$Delay ~ delays$Carrier, var.equal = FALSE)
+print(delayTest)
+```
+
+```{r}
+N <- 10^5 - 1
+permMeanDiff <- numeric(N)
+
+testdata <- delays$Delay
+
+for (i in 1:N){
+   index <- sample(4029, 403)
+   AA <- testdata[index]
+   UA <- testdata[-index]
+   permMeanDiff[i] <- mean(AA) - mean(UA)
+}
+
+ggplot(NULL, aes(x = permMeanDiff)) + 
+  geom_histogram(bins = 30, fill = "lightblue") + 
+  geom_vline(xintercept = obsMeanDiff, color = "red") +
+  labs(title = "Mean Differences for 1,000,000 Resamples of the Data")
+
+# lower tail test with Ha: mu_b < mu_g
+
+pvalue.lower <- (sum(permMeanDiff <= obsMeanDiff) + 1) / (N + 1)
+
+# upper tail test with Ha: mu_b > mu_g
+
+pvalue.upper <- (sum(permMeanDiff >= obsMeanDiff) + 1) / (N + 1)
+
+# two-tail test with Ha: mu_b =/= mu_g
+
+pvalue.twotail <- 2 * min(pvalue.lower, pvalue.upper)
+
+data.frame(alternative = c("Lower-Tail", "Upper-Tail", "Two-Tailed"),
+           pvalue      = c(pvalue.lower, pvalue.upper, pvalue.twotail))
+```
+
+### Problem 2
+
+Conduct a traditional z-test and a permutation resampling test to determine whether United Airlines has a greater proportion of flights delayed by 30 minutes than American Airlines. 
+
+```{r}
+summaries <- delays %>% 
+  group_by(Carrier) %>% summarize(n = n(), 
+                                phat_y = mean(Delayed30 == "No"), 
+                                phat_n = mean(Delayed30 == "Yes"))
+print.data.frame(summaries, rwo.names = FALSE)
+table(delays$Carrier, delays$Delayed30)
+
+obsPropDiff_n <- -diff(summaries$phat_n)
+obsPropDiff_y <- -diff(summaries$phat_y)
+print(obsPropDiff_n)
+print(obsPropDiff_y)
+homeTest1 <- prop.test(table(delays$Carrier, delays$Delayed30), correct = FALSE)
+print(homeTest1)
+
+homeTest2 <- prop.test(table(delays$Carrier, delays$Delayed30), correct = TRUE)
+print(homeTest2)
+```
+
+```{r}
+N <- 10^5 - 1
+permPropDiff <- numeric(N)
+
+testdata <- delays$Delayed30
+
+for (i in 1:N){
+   index <- sample(4029, 403)
+   AA <- testdata[index]
+   UA  <- testdata[-index]
+   permPropDiff[i] <- mean(UA == "yes") - mean(AA == "yes")
+}
+
+ggplot(NULL, aes(x = permPropDiff)) + 
+  geom_histogram(bins = 30, fill = "lightblue") + 
+  geom_vline(xintercept = obsPropDiff_y, color = "red") +
+  labs(title = "Resampling Mean Differences")
+
+# lower tail test with Ha: mu_b < mu_g
+
+pvalue.lower <- (sum(permPropDiff <= obsPropDiff_y) + 1) / (N + 1)
+
+# upper tail test with Ha: mu_b > mu_g
+
+pvalue.upper <- (sum(permPropDiff >= obsPropDiff_y) + 1) / (N + 1)
+
+# two-tail test with Ha: mu_b =/= mu_g
+
+pvalue.twotail <- 2 * min(pvalue.lower, pvalue.upper)
+
+data.frame(alternative = c("Lower-Tail", "Upper-Tail", "Two-Tailed"),
+           pvalue      = c(pvalue.lower, pvalue.upper, pvalue.twotail))
+```
+
+### Problem 3
+
+Conduct a traditional F-test and permutation resampling test to determine whether the variance in flight delay times is different between the two carriers. Unlike means and proportions, the test statistic used for a test of two variances is the _ratio_ of the variances, not the difference.
+
+```{r}
+summariesF <- delays %>% group_by(Carrier) %>% summarize(n = n(), varience = var(DepartTime), stdv = sd(DepartTime))
+obsVarDiff <- -diff(summariesF$varience)
+var.test(delays$DepartTime ~ delays$Carrier,
+         alternative = "two.sided")
+print(summariesF)
+```
+
+```{r}
+# N <- 10^5 - 1
+# permVarDiff <- numeric(N)
+
+# testdata <- delays$DepartTime
+
+# for (i in 1:N){
+#   index <- sample(4029, 403)
+#   AA <- testdata[index]
+#   UA <- testdata[-index]
+#   permVarDiff[i] <- var(AA)/var(UA)
+#}
+
+# ggplot(NULL, aes(x = permVarDiff)) + 
+#  geom_histogram(bins = 30, fill = "lightblue") + 
+#  geom_vline(xintercept = obsVarDiff, color = "red") +
+#  labs(title = "Mean Differences for 1,000,000 Resamples of the Data")
+
+# lower tail test with Ha: mu_b < mu_g
+
+# pvalue.lower <- (sum(permVarDiff <= obsVarDiff) + 1) / (N + 1)
+
+# upper tail test with Ha: mu_b > mu_g
+
+# pvalue.upper <- (sum(permVarDiff >= obsVarDiff) + 1) / (N + 1)
+
+# two-tail test with Ha: mu_b =/= mu_g
+
+# pvalue.twotail <- 2 * min(pvalue.lower, pvalue.upper)
+
+# data.frame(alternative = c("Lower-Tail", "Upper-Tail", "Two-Tailed"),
+#           pvalue      = c(pvalue.lower, pvalue.upper, pvalue.twotail))
+```
+<hr>
+
+END!!!

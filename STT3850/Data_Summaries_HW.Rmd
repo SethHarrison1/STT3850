@@ -1,0 +1,88 @@
+---
+title: "Categorical Summaries"
+author: "Seth Harrison"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+Consider the Flight Delays dataset discussed in Chapter 1 of the Chihara & Hesterberg textbook, which contains information on selected flights departing from LaGuardia airport in 2009. Complete the problems below using that dataset. For all plots, be sure to add an informative title and labels for the x and y axes.
+
+```{r message = FALSE}
+delays <- read.csv("https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Chihara/FlightDelays.csv")
+library(dplyr)
+library(ggplot2)
+```
+
+
+### Problem 1
+
+Create frequency tables for all of the qualitative variables.
+
+```{r}
+carrierTable <- table(delays$Carrier)
+destinationTable <- table(delays$Destination)
+departTable <- table(delays$DepartTime)
+daysTable <- table(delays$Day)
+monthsTable <- table(delays$Month)
+delayed30Table <- table(delays$Delayed30)
+```
+
+
+### Problem 2
+
+Create a barplot to display the frequency of each destination.
+
+```{r}
+ggplot(delays, aes(x = Destination)) + geom_bar() + labs(title = "Destination Frequencies", y = "Frequency")
+```
+
+
+### Problem 3
+
+Create a barplot to show the relative frequency of each destination.
+
+```{r}
+delaysTable <- delays %>% 
+  count(Destination) %>%
+  mutate(cum_n    = cumsum(n),
+         prop     = prop.table(n))
+ggplot(delaysTable, aes(x = Destination, y = prop)) +
+  geom_col() +
+  labs(y = "Proportion of Total") +
+  ggtitle("Relative Frequency Table of Destinations")
+
+```
+
+
+### Problem 4
+
+Use the information found [HERE](http://www.cookbook-r.com/Manipulating_data/Changing_the_order_of_levels_of_a_factor/) to reorder the levels of the departure time variable so they start at 4am and go in order around the clock. Then create a table that shows cumulative frequency of flights through the day and a barplot that shows the fraction of flights within each time period that are delayed by thirty minutes or more.
+
+```{r}
+delays$DepartTime <- ordered(delays$DepartTime, levels = c("4-8am", "8-Noon", "Noon-4pm", "4-8pm", "8-Mid"))
+
+# departFreqTable <- 
+# departFreqTable <- departFreqTable %>%
+#  mutate(DepartTime, cumFreq = cumsum(n))
+# print(departFreqTable)
+``` 
+### I had the code here working and then when I tried to knit it to html it gave me errors no matter what I changed.
+
+### Problem 5
+
+For two qualitative variables of your choice, create a table and a plot to summarize their relationship. What is one question your summaries might help answer?
+
+```{r}
+monthVSdelay <- table(delays$Day, delays$Delayed30)
+print(monthVSdelay)
+```
+
+```{r}
+ggplot(delays, aes(x = Day, color = Delayed30)) + geom_bar(fill = "White")
+```
+# Using this BoxPlot we can see that there are significantly more delays on thursday and friday than other days. This would be useful when trying to decide what day you could travel and have the lowest chance of experiencing a delay.
+
+
+<hr>
+
+END!!!

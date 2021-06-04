@@ -1,0 +1,59 @@
+---
+title: "Hypothesis Testing: Chi-Square tests"
+author: "Seth Harrison"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+```{r echo=FALSE}
+# Load any necessary packages here. Suppress messages for this code chunk.
+library(ggplot2)
+library(dplyr)
+Legal <- read.csv(file = "https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Instructor/mmFEB2015.csv")
+Delays <- read.csv(file = "https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Chihara/FlightDelays.csv")
+MPG <- read.csv(file = "https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Instructor/gasmileage.csv")
+```
+
+
+### Problem 1
+
+* Dataset: https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Instructor/mmFEB2015.csv
+* Description: https://stat-jet-asu.github.io/Datasets/InstructorDescriptions/mmFEB2015.html
+
+Are legal gay marriage and legal marijuana use independent for states in the US? If not, what seems to be the nature of the relationship? Perform both a traditional chi-square test and a permutation test. 
+
+```{r}
+marijuanaT <- table(Legal$marriage, Legal$marijuana)
+t.test(marijuanaT)
+chisq.test(marijuanaT)
+
+```
+
+
+### Problem 2
+
+Consider the Flight Delays dataset. Is the distribution of flights throughout the week (i.e., number of flights each day) the same for AA and UA? If not, how do they differ? Perform both a traditional chi-square test and a permutation test.
+
+```{r}
+daycar <- table(Delays$Carrier, Delays$Day)
+chisq.test(daycar)
+t.test(daycar)
+```
+
+
+### Problem 3
+
+The following data are the results of 25 gas mileage readings on a given vehicle. Determine whether the population distribution of gas mileage for the vehicle is (a) N(37, 1.5^2^); and (b) normally distributed, with no specified mean and variance. 
+
+```{r}
+gasoline <- data.frame(MPG = c(38.0, 36.5, 37.7, 39.5, 35.0, 37.3, 35.6, 33.1, 37.8, 38.4, 38.2, 37.1, 38.3, 40.2, 37.1, 38.6, 41.2, 35.8, 37.9, 37.6, 38.8, 36.6, 36.9, 34.2, 36.8))
+gasoline
+
+ggplot(gasoline, aes(x = MPG)) +
+  geom_histogram()
+```
+
+
+<hr>
+
+END!!!

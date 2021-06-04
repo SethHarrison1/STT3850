@@ -1,0 +1,127 @@
+---
+title: "Project 03"
+author: "Seth Harrison"
+date: 'Updated: `r format(Sys.time(), "%A, %B %d, %Y @ %X")`'
+output: 
+  html_document: 
+    highlight: textmate
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "")
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r, message=FALSE}
+library(ggplot2)
+library(dplyr)
+fish <- read.csv("https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Chihara/FishMercury.csv")
+```
+
+<hr>
+
+### Your Analyses
+
+1) Compute the sample size, mean, standard deviation, median, and 5% trimmed mean for the sample using `summarize` in `dplyr`. Create a boxplot using `ggplot2`. You do not need a title or different axis labels.
+
+```{r}
+FishSumm <- fish %>% summarize(n = n(),
+                                   mean = mean(fish$Mercury),
+                                   Stdv = sd(fish$Mercury),
+                                   median = median(fish$Mercury),
+                                   TrimMean = mean(fish$Mercury, trim = .05))
+print(FishSumm)
+ggplot(fish, aes(x = NULL, y = Mercury)) + geom_boxplot() + coord_flip()
+
+
+```
+2) A common rule for determining when we can use the central limit theorem is n ≥ 30. Since that is true in this instance, compute a traditional 95% confidence interval to estimate the true mean level of mercury for this species of fish in the sampled lake. 
+
+```{r}
+fish <- read.csv("https://raw.githubusercontent.com/STAT-JET-ASU/Datasets/master/Chihara/FishMercury.csv") %>%
+  filter(Mercury > 0)
+Merc <- fish$Mercury
+n      <- length(Merc)
+mean(Merc) + qt(c(0.025, 0.975), n-1) * sd(Merc)/sqrt(n)
+```
+3) Compute a bootstrap 95% percentile interval to estimate the true mean level of mercury for this species of fish in the sampled lake. Do not include any plots in this section.
+
+```{r}
+N <- 10^4
+
+bootmean <- numeric(N)
+
+for (i in 1:N){
+  bootsample <- sample(Merc, n, replace = TRUE)
+  bootmean[i] <- mean(bootsample)
+}
+
+quantile(bootmean, c(0.025, 0.975))
+```
+
+
+4) Assess your bootstrap sampling distribution of $\bar{x}$ for normality using a density plot, an ECDF plot, and a quantile-quantile plot. Include red reference curves for the theoretical normal distribution.
+
+```{r}
+ggplot(NULL, aes(x = bootmean)) + 
+  geom_density(fill = "lightblue", color = "gray") +
+  stat_function(fun = dnorm, args = list(mean(bootmean), sd(bootmean)), color = "red")
+
+ggplot(NULL, aes(sample = bootmean)) + 
+  geom_qq() + 
+  geom_qq_line(color = "red")
+
+M <- mean(bootmean)
+S <- sd(bootmean)
+ggplot(NULL, aes(x = bootmean)) + 
+  stat_ecdf() +
+  stat_function(fun = pnorm, args = list(M, S), color = "red")
+```
+
+5) Create an ordered factor variable called `safety` that categorizes fish in the sample as "Best", "Good", or "Avoid". Then create a barplot to display that variable. Include an informative title and axis labels.
+
+```{r}
+safety <- fish %>% mutate(SafetyLevel = case_when(
+  Mercury <= .15 ~ "Best",
+  Mercury > .15 & Mercury <= .46 ~ "Good",
+  Mercury > .46 ~ "Avoid"
+))
+
+safety$SafetyLevel<- factor(safety$SafetyLevel, levels = c("Avoid","Good","Best"))
+
+ggplot(safety, aes(x = SafetyLevel)) + geom_bar() + labs(x = "Safety Level", y = "Amount of this type in Lake", title = "Safety Levels of Fish in Lake")
+```
+
+
+6) Compute a bootstrap 95% percentile interval to estimate the true proportion of this species of fish that fall into the "best" category. Do not include any plots in this section.
+
+```{r}
+N <- 10^4
+
+bootmean <- numeric(N)
+
+safetyBest <- safety$SafetyLevel == "Best"
+
+for (i in 1:N){
+  bootsampleBest <- sample(safetyBest, n, replace = TRUE)
+  bootmean[i] <- mean(bootsampleBest)
+}
+
+quantile(bootmean, c(0.025, 0.975))
+```
+
+
+7) Why are your intervals in (2) and (3) different? Is it appropriate to the CLT for these data? Expain using the results of (1) and (4). 
+
+ANSWER: Our intervals are different because the bootstrap sample represent what would happen if we took thousands of samples similar to the sample we took, which is just one individual sample, which we assess in part 1. It is appropriate to use the Central Limit Theorem for these data because the sample size is greater than 30 and our data displayed in part 4 follows the trend we would expect when using the CLT.
+
+
+8) Assuming this is a representative sample, can we confidently say a majority of all fish of this species in the lake have fewer than 0.15 µg/g of mercury? Why or why not?
+
+ANSWER: No we can not say that a majority of all fish of this species in the lake have fewer than .15 ug/g of mercury because the confidence interval states that there is still a chance of having below 50% which is the .4333. Because of this chance we cannot say the majority of fish have under .15 µg/g of mercury.
+
+<hr>
+
+END PROJECT 3

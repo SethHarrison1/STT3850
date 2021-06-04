@@ -1,0 +1,71 @@
+---
+title: "Digital Communication, Part 1"
+author: "PUT THE NAMES OF ALL GROUP MEMBERS HERE"
+date: 'Updated: `r format(Sys.time(), "%A, %B %d, %Y @ %X")`'
+output: 
+  html_document: 
+    highlight: textmate
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "")
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r, echo=FALSE}
+# load all packages and datasets here
+
+```
+
+<hr>
+
+1) A 1000 Mbit/s system transmits 10^9^ bits per second. If each bit has a 1% chance of being incorrectly received, how many errors per second would we expect to get? What is the standard deviation in the number of errors?
+
+```{r}
+
+```
+
+
+2) Let X be the number of bits in a single TRC block correctly received. Compute the pmf of X. Display the results in a tibble and a plot. Color the bars corresponding to "majority" red. What is the probability that any single TRC block (e.g., 000) is interpreted correctly?
+
+```{r}
+
+```
+
+
+3) Suppose we have a parallel system that lets us transmit 10^9^ bits per second using TRC. How many errors per second would we expect to get? What percentage reduction does this represent compared to the single-bit system?
+
+```{r}
+
+```
+
+
+4) In the ASCII representation of the alphabet, each letter is coded using a permutation of eight 0’s and 1’s. For example, J = 01001010. If we transmit a letter using the TRC system, what is the probability the letter will be interpreted correctly?
+
+```{r}
+
+```
+
+
+5) Modify the code below to display the ASCII representation of the last name of each member of your group. What is the probability that each name would be correctly interpreted at the receiving end (i.e., there are no mistakes in any letter)?
+
+```{r}
+
+```
+
+
+6) We plan to transmit the 1,444 characters of Lincoln's Gettysburg Address (Bliss version), which includes letters, spaces between words, and punctuation. A space or punctuation is treated exactly like a letter; e.g., the code for a space is 00100000. How many character errors should we expect to get? What is the standard deviation in the number of errors?
+
+```{r}
+
+```
+
+
+<hr>
+
+```{r}
+sessionInfo()
+```
+

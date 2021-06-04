@@ -1,0 +1,155 @@
+---
+title: "Creating and Manipulating Vectors"
+author: "Seth Harrison"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+### Problem 1
+
+Create vectors to represent the outcomes or sample spaces for the following scenarios using `c`, `:`, `seq`, and/or `rep`. Whenever possible, try to be efficient by using the options other than `c`. Store your vectors using `<-` and use `print()` to show the contents.
+
+* The sample space of a random variable X is {0, 1, 2, ..., 10}.
+
+```{r}
+x <- c(0:10)
+print(x)
+```
+
+* Scores on a test can be 0 or any positive, even integer up to 100.
+
+```{r}
+scores <- seq(from = 0, to = 100, by = 2)
+print(scores)
+```
+
+* A machine reads the pH of a solution to one decimal place of precision.
+
+```{r}
+pH <- seq(from = 0, to = 14, by = .1)
+print(pH)
+```
+
+* A player in a particular game can choose rock, paper, scissors, lizard, or Spock.
+
+```{r}
+gameOptions <- c("rock", "paper", "scissors", "lizard", "Spock")
+print(gameOptions)
+```
+
+* A clock counts down from 60 seconds to zero seconds in whole-second increments.
+
+```{r}
+seconds <- seq(from = 60, to = 0, by = -1)
+print(seconds)
+```
+
+* A song's chorus contains the following three phrases, sung once in order then repeated.
+    + I get knocked down
+    + But I get up again
+    + You're never gonna keep me down
+
+```{r}
+song <- c("I get knocked down", "But I get up again", "You're never gonna keep me down")
+chorus <- rep(song, times = 2)
+print(chorus)
+```
+
+* In a particular group of 100 people, each person has one of four blood types: A, B, AB, or O.
+    + A = 40%
+    + B = 11%
+    + AB = 4%
+    + O = 45%
+    
+```{r}
+bloodType <- c("A", "B", "AB", "O")
+probabilityBlood <- c("40%", "11%", "4%", "45%")
+names(probabilityBlood) <- bloodType
+print(probabilityBlood)
+```
+
+
+### Problem 2
+
+Consider two classes of STT3850. Section 101 has 7 actuarial science majors, 12 computer science majors, 5 mathematics majors, and 7 majors in other science disciplines. The counts for Section 102 are 4, 13, 5, and 9. Be sure to `print()` each object you create below.
+
+* Create two named vectors, one for each section, that contain the counts in each major with the appropriate major labels.
+* Use the two vectors you made to create a third vector that contains the total number of students in each major category.
+* Using the combined data, create a vector that shows the fraction of students in each major.
+* Extract a vector that contains only the fractions for Actuarial Science and Mathematics.
+* Create a data frame that contains the following variables: section, major, and count. 
+
+```{r}
+sec101 <- c(7, 12, 5, 7)
+print(sec101)
+sec102 <- c(4, 13, 5, 9)
+print(sec102)
+majors <- c("actuarial science", "computer science", "mathematics", "other")
+print(majors)
+names(sec101) <- majors
+print(sec101)
+names(sec102) <- majors
+print(sec102)
+totalSec <- sec101 + sec102
+print(totalSec)
+percentSec <- (totalSec / 62)
+print(percentSec)
+ActMatSec <- c(percentSec[1], percentSec[3]) 
+print(ActMatSec)
+dataFrameClass <- data.frame(sec101, sec102)
+dataFrameClass
+```
+
+
+### Problem 3
+
+Suppose we want to simulate repeatedly rolling a single six-sided die.
+
+* Create and `print()` vector called DIE that contains the integers 1 through 6.
+* Use `sample()` to simulate rolling the die 1000 times and store the results as ROLLS. 
+* Create and `print()` a summary to show how many times each value occurs in ROLLS.
+
+```{r}
+DIE <- seq(from = 1, to = 6, by = 1)
+print(DIE)
+ROLLS <- sample(DIE, size = 1000, replace = T)
+print(ROLLS)
+```
+
+
+### Problem 4
+
+Write a `for` loop to help create a vector that contains the first 20 numbers in the [Fibonacci sequence](https://www.mathsisfun.com/numbers/fibonacci-sequence.html). 
+
+* Use the `numeric` function to pre-create a vector of zeroes called FIB in which to store your results. 
+* Set the first element of FIB to zero.
+* Set the second element of FIB to one.
+* Use a loop to calculate the remaining 18 elements (i.e., elements 3 through 20) and store them in FIB.
+* Print the contents of FIB.
+* If you don't get the correct 20 numbers, recheck your work!
+
+```{r}
+FIB <- numeric(length = 20)
+FIB[1] <- 0
+FIB[2] <- 1
+for(i in 3:20) {FIB[i] = FIB[i - 1] + FIB[i - 2]}
+print(FIB)
+```
+
+EXTENSION: Can you modify your code to allow someone to select how many numbers they want to generate?
+
+# Insert z length at start for whatever length youd like to reach, for example 30.
+```{r}
+z = 30
+FIB2 <- numeric(length = z)
+FIB2[1] <- 0
+FIB2[2] <- 1
+for(i in 3:z) {FIB2[i] = FIB2[i - 1] + FIB2[i - 2]}
+print(FIB2)
+
+```
+
+
+<hr>
+
+END!!!

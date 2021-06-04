@@ -1,0 +1,69 @@
+---
+title: "Popularity Study, Part 1"
+author: "PUT THE NAMES OF ALL GROUP MEMBERS HERE"
+date: 'Updated: `r format(Sys.time(), "%A, %B %d, %Y @ %X")`'
+output: 
+  html_document: 
+    highlight: textmate
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "")
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r, echo=FALSE}
+# load all packages and datasets here
+
+```
+
+<hr>
+
+1) Display the dataset structure and a basic `summary()`.
+
+```{r}
+
+```
+
+
+2) Create a table and a plot that divides each goal according to the percentage of boys and girls who chose that goal. Does choice of top goal appear to be related to gender? Explain.
+
+```{r}
+
+```
+
+EXPLAIN:
+
+
+3) Create a table and a plot that divides each district type according to the percentage of students who chose each goal. Does choice of top goal appear to be related to district type? Explain.
+
+```{r}
+
+```
+
+EXPLAIN:
+
+
+4) Create four barplots to compare the ranks given to grades, sports, looks, and money by boys and girls. Use unstacked bars in these plots. Do the rankings appear to differ by gender? Explain.
+
+```{r}
+
+```
+
+EXPLAIN:
+
+
+5) Are there any unusually young or old students in this sample? Compute the fences to determine what qualifies as unusually young or old. Use them to filter the dataset and print only those cases.
+
+```{r}
+
+```
+
+
+<hr>
+
+```{r}
+sessionInfo()
+```
